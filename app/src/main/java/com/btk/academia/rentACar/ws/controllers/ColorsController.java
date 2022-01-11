@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.btk.academia.rentACar.business.abstracts.ColorService;
 import com.btk.academia.rentACar.business.dtos.ColorListDto;
+import com.btk.academia.rentACar.core.utilities.results.DataResult;
 
 @RestController
 @RequestMapping("/api/colors")
@@ -20,7 +21,7 @@ public class ColorsController {
 	}
 	
 	@GetMapping("getall")
-	public List<ColorListDto> getAll(){
+	public DataResult<List<ColorListDto>> getAll(){
 		return this.colorService.getAll();
 	}
 

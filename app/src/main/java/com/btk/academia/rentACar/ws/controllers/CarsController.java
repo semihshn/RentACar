@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.btk.academia.rentACar.business.abstracts.CarService;
 import com.btk.academia.rentACar.business.dtos.CarListDto;
+import com.btk.academia.rentACar.core.utilities.results.DataResult;
 
 @RestController
 @RequestMapping("/api/cars")
@@ -20,7 +21,7 @@ public class CarsController {
 	}
 	
 	@GetMapping("getall")
-	public List<CarListDto> getAll(){
+	public DataResult<List<CarListDto>> getAll(){
 		return this.carService.getAll();
 	}
 
