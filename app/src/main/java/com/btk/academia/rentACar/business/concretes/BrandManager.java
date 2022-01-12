@@ -10,6 +10,7 @@ import com.btk.academia.rentACar.business.abstracts.BrandService;
 import com.btk.academia.rentACar.business.constants.Messages;
 import com.btk.academia.rentACar.business.dtos.BrandListDto;
 import com.btk.academia.rentACar.business.requests.brandRequests.CreateBrandRequest;
+import com.btk.academia.rentACar.business.requests.brandRequests.UpdateBrandRequest;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
 import com.btk.academia.rentACar.core.utilities.results.DataResult;
@@ -27,8 +28,9 @@ public class BrandManager implements BrandService {
 	private ModelMapperService modelMapperService;
 
 	@Autowired
-	public BrandManager(BrandDao brandDao) {
+	public BrandManager(BrandDao brandDao,ModelMapperService modelMapperService) {
 		this.brandDao = brandDao;
+		this.modelMapperService = modelMapperService;
 	}
 
 	@Override
@@ -53,14 +55,21 @@ public class BrandManager implements BrandService {
 		this.brandDao.save(brand);
 		return new SuccessResult(Messages.brandAdded);
 	}
+	
+	@Override
+	public Result update(UpdateBrandRequest updateBrandRequest) {
+		Brand brand = modelMapperService.forRequest().map(updateBrandRequest, Brand.class);
+		this.brandDao.save(brand);
+		return new SuccessResult(Messages.brandUpdated);
+	}
 
 	private Result checkIfBrandNameExists(String brandName) {
 		Brand brand = brandDao.findByName(brandName);
 		if (brand != null) {
-			return new SuccessResult();
+			return new ErrorResult(Messages.brandNameAlreadyExists);	
 		}
-
-		return new ErrorResult(Messages.brandNameAlreadyExits);
+		
+		return new SuccessResult();
 	}
 
 	private Result checkIfBrandLimitExceeded(Integer limit) {

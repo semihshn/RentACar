@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.btk.academia.rentACar.business.abstracts.BrandService;
 import com.btk.academia.rentACar.business.dtos.BrandListDto;
 import com.btk.academia.rentACar.business.requests.brandRequests.CreateBrandRequest;
+import com.btk.academia.rentACar.business.requests.brandRequests.UpdateBrandRequest;
 import com.btk.academia.rentACar.core.utilities.results.DataResult;
 import com.btk.academia.rentACar.core.utilities.results.Result;
 
@@ -34,6 +36,11 @@ public class BrandsController {
 	@PostMapping("add")
 	public Result add(@RequestBody @Valid CreateBrandRequest createBrandRequest){
 		return this.brandService.add(createBrandRequest);
+	}
+	
+	@PutMapping("update")
+	public Result update(@RequestBody @Valid UpdateBrandRequest updateBrandRequest){
+		return this.brandService.update(updateBrandRequest);
 	}
 
 }
