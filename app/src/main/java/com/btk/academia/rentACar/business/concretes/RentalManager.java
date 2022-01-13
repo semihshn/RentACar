@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.btk.academia.rentACar.business.abstracts.CarMaintanceService;
 import com.btk.academia.rentACar.business.abstracts.CustomerService;
 import com.btk.academia.rentACar.business.abstracts.RentalService;
 import com.btk.academia.rentACar.business.constants.Messages;
-import com.btk.academia.rentACar.business.dtos.ColorListDto;
-import com.btk.academia.rentACar.business.dtos.CustomerListDto;
 import com.btk.academia.rentACar.business.dtos.RentalListDto;
 import com.btk.academia.rentACar.business.requests.rentalRequests.CreateRentalRequest;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
@@ -22,9 +24,6 @@ import com.btk.academia.rentACar.core.utilities.results.Result;
 import com.btk.academia.rentACar.core.utilities.results.SuccessDataResult;
 import com.btk.academia.rentACar.core.utilities.results.SuccessResult;
 import com.btk.academia.rentACar.dataAccess.abstracts.RentalDao;
-import com.btk.academia.rentACar.entities.concretes.Car;
-import com.btk.academia.rentACar.entities.concretes.Color;
-import com.btk.academia.rentACar.entities.concretes.Customer;
 import com.btk.academia.rentACar.entities.concretes.Rental;
 
 @Service
@@ -33,12 +32,14 @@ public class RentalManager implements RentalService {
 	private RentalDao rentalDao;
 	private ModelMapperService modelMapperService;
 	private CustomerService customerService;
+	private CarMaintanceService carMaintanceService;
 	
 	@Autowired
-	public RentalManager(RentalDao rentalDao,ModelMapperService modelMapperService,CustomerService customerService) {
+	public RentalManager(RentalDao rentalDao,ModelMapperService modelMapperService,CustomerService customerService,	@Lazy CarMaintanceService carMaintanceService) {
 		this.rentalDao=rentalDao;
 		this.modelMapperService=modelMapperService;
 		this.customerService=customerService;
+		this.carMaintanceService=carMaintanceService;
 	}
 
 	@Override
@@ -73,8 +74,10 @@ public class RentalManager implements RentalService {
 	}
 	
 	@Override
-	public DataResult<List<RentalListDto>> getAll() {
-		List<Rental> rentalList = this.rentalDao.findAll();
+	public DataResult<List<RentalListDto>> getAll(Integer pageNo, Integer pageSize) {
+		Pageable pageable = PageRequest.of(pageNo-1, pageSize==null?10:pageSize);
+		
+		List<Rental> rentalList = this.rentalDao.findAll(pageable).getContent();
 		List<RentalListDto> response = rentalList.stream()
 				.map(rental->modelMapperService.forDto()
 						.map(rental, RentalListDto.class))
@@ -105,6 +108,17 @@ public class RentalManager implements RentalService {
         
 		if (customerService.getById(customerId)==null) {
 			return new ErrorResult(Messages.notAvailableCustomer);
+		}
+
+		return new SuccessResult();
+	}
+	
+	//Araba bakımdaysa kiraya gönderilemez
+	//carmaintance tablosunda, carId kontrol et ve bakımda olup olmadığını öğren
+	private Result checkCarMaintanance(Integer carId) {
+        
+		if (carMaintanceService.getByCarId(carId)!=null) {
+			return new ErrorResult("bu araba bakımda kiralanamaz");
 		}
 
 		return new SuccessResult();

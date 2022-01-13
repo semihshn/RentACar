@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 public class CreateCarMaintanceRequest {
 	
 	private LocalDateTime maintenanceStart;
-	
 	private LocalDateTime maintenanceEnd;
-	
 	private Integer carId;
 
 }

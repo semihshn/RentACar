@@ -21,5 +21,7 @@ public class CreateRentalRequest {
 	
 	private Integer customerId;
 	private Integer carId;
+	private Integer pickUpRentalCityId;
+	private Integer returnRentalCityId;
 
 }

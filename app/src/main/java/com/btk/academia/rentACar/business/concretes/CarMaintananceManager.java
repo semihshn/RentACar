@@ -1,7 +1,5 @@
 package com.btk.academia.rentACar.business.concretes;
 
-import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,11 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.btk.academia.rentACar.business.abstracts.CarMaintanceService;
 import com.btk.academia.rentACar.business.abstracts.RentalService;
-import com.btk.academia.rentACar.business.constants.Messages;
-import com.btk.academia.rentACar.business.dtos.BrandListDto;
 import com.btk.academia.rentACar.business.dtos.CarMaintanceDto;
 import com.btk.academia.rentACar.business.requests.carMaintanceRequest.CreateCarMaintanceRequest;
-import com.btk.academia.rentACar.business.requests.carRequest.CreateCarRequest;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
 import com.btk.academia.rentACar.core.utilities.results.DataResult;
@@ -22,12 +17,8 @@ import com.btk.academia.rentACar.core.utilities.results.ErrorResult;
 import com.btk.academia.rentACar.core.utilities.results.Result;
 import com.btk.academia.rentACar.core.utilities.results.SuccessDataResult;
 import com.btk.academia.rentACar.core.utilities.results.SuccessResult;
-import com.btk.academia.rentACar.dataAccess.abstracts.BrandDao;
 import com.btk.academia.rentACar.dataAccess.abstracts.CarMaintanceDao;
-import com.btk.academia.rentACar.entities.concretes.Brand;
-import com.btk.academia.rentACar.entities.concretes.Car;
 import com.btk.academia.rentACar.entities.concretes.CarMaintanance;
-
 @Service
 public class CarMaintananceManager implements CarMaintanceService{
 	
@@ -65,6 +56,12 @@ public class CarMaintananceManager implements CarMaintanceService{
 				.map(carMaintance -> modelMapperService.forDto().map(carMaintance, CarMaintanceDto.class)).collect(Collectors.toList());
 
 		return new SuccessDataResult<List<CarMaintanceDto>>(response);
+	}
+	
+	@Override
+	public DataResult<CarMaintanance> getByCarId(Integer id) {
+		CarMaintanance carMaintanance = this.carMaintanceDao.findByCarId(id);
+		return new SuccessDataResult<CarMaintanance>(carMaintanance);
 	}
 	
 	//Araba bakımdan dönmediyse tekrar bakıma gönderilemez
