@@ -1,5 +1,7 @@
 package com.btk.academia.rentACar.business.dtos;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,12 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarListDto {
-
-	private Double dailyPrice;
-	private Integer modelYear;
-	private String description;
-	private Integer findexScore;
-	private Integer kilometer;
+public class CarMaintanceDto {
+	
+	private Integer carId;
+	private LocalDateTime maintenanceStart;
+	private LocalDateTime maintenanceEnd;
 
 }

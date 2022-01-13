@@ -47,7 +47,7 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 	
 	private Result checkIfEmailExists(String email) {
 		if (this.individualCustomerDao.findByEmail(email)!=null) {
-			return new ErrorResult(Messages.brandLimitExceeded);
+			return new ErrorResult("Bu email ile kayıtlı birisi var");
 		}
 
 		return new SuccessResult();
@@ -57,8 +57,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         Integer year=Calendar.getInstance().get(Calendar.YEAR);
         
-		if (birtYear<year+18) {
-			return new ErrorResult(Messages.brandLimitExceeded);
+		if (birtYear>year-18) {
+			return new ErrorResult("18 yaşından küçükler kayıt olamaz");
 		}
 
 		return new SuccessResult();
