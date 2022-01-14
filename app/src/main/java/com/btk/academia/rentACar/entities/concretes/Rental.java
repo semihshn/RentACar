@@ -61,6 +61,6 @@ public class Rental {
 	private List<Payment> payments;
 	
 	@OneToMany(mappedBy="rental")
-	private List<AdditionalService> AdditionalServices;
+	private List<AdditionalService> additionalServices;
 
 }

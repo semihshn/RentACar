@@ -11,6 +11,5 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CreatePaymentRequest {
 
-    private LocalDate paymentDate;
     private Integer rentalId;
 }

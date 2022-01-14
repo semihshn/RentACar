@@ -21,8 +21,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +72,7 @@ public class PaymentManager implements PaymentService {
         RentalDto rental= rentalService.getById(rentalId).getData();
 
         //date difference
-        Period diff = Period.between(rental.getRentDate(), rental.getReturnDate());
+        long diff= ChronoUnit.DAYS.between(rental.getRentDate(), rental.getReturnDate());
 
         //dependency
         CarDto carDto = carService.getById(rental.getCarId()).getData();
@@ -79,13 +82,17 @@ public class PaymentManager implements PaymentService {
                 .map(a->a.getPrice())
                 .reduce((double) 0, (Double::sum));
 
-        Double total = carDto.getDailyPrice()*diff.getDays()+serviceTotalPrice;
+        Double total = carDto.getDailyPrice()*diff+serviceTotalPrice;
 
         if(!rental.getReturnDate().equals(LocalDateTime.now())){
             payment.setTotal(total);
         }
 
+        payment.setPaymentDate(LocalDateTime.now());
+
         return payment;
 
     }
+
+
 }
