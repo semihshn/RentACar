@@ -22,7 +22,7 @@ public class CarDamagesController {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateCarDamageRequest createCarDamageRequest){
+	public Result add(@RequestBody CreateCarDamageRequest createCarDamageRequest){
 		return this.carDamageService.add(createCarDamageRequest);
 	}
 

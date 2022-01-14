@@ -34,12 +34,12 @@ public class BrandsController {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateBrandRequest createBrandRequest){
+	public Result add(@RequestBody CreateBrandRequest createBrandRequest){
 		return this.brandService.add(createBrandRequest);
 	}
 	
 	@PutMapping("update")
-	public Result update(@RequestBody @Valid UpdateBrandRequest updateBrandRequest){
+	public Result update(@RequestBody UpdateBrandRequest updateBrandRequest){
 		return this.brandService.update(updateBrandRequest);
 	}
 

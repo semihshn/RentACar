@@ -22,7 +22,7 @@ public class AdditionalServicesContoller {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateAdditionalServiceRequest createAdditionalServiceRequest){
+	public Result add(@RequestBody CreateAdditionalServiceRequest createAdditionalServiceRequest){
 		return this.additionalServiceService.add(createAdditionalServiceRequest);
 	}
 

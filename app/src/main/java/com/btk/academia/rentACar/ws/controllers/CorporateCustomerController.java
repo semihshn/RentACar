@@ -22,7 +22,7 @@ public class CorporateCustomerController {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateCorporateCustomerRequest createCorporateCustomerRequest){
+	public Result add(@RequestBody CreateCorporateCustomerRequest createCorporateCustomerRequest){
 		return this.corporateCustomerService.add(createCorporateCustomerRequest);
 	}
 

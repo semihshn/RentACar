@@ -28,7 +28,7 @@ public class RentalController {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateRentalRequest createRentalRequest){
+	public Result add(@RequestBody CreateRentalRequest createRentalRequest){
 		return this.rentalService.add(createRentalRequest);
 	}
 	

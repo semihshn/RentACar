@@ -6,4 +6,6 @@ import com.btk.academia.rentACar.entities.concretes.AdditionalService;
 
 public interface AdditionalServiceDao extends JpaRepository<AdditionalService, Integer> {
 
+    AdditionalService findByRentalId(Integer rentalId);
+
 }

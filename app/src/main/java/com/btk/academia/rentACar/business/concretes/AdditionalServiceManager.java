@@ -1,5 +1,8 @@
 package com.btk.academia.rentACar.business.concretes;
 
+import com.btk.academia.rentACar.core.utilities.results.DataResult;
+import com.btk.academia.rentACar.core.utilities.results.SuccessDataResult;
+import com.btk.academia.rentACar.entities.concretes.Rental;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +39,12 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 		this.additionalServiceDao.save(additionalService);
 		return new SuccessResult("Ek hizmet eklendi");
 	}
-	
-	
+
+	@Override
+	public DataResult<AdditionalService> getByRentalId(Integer rentalId) {
+		AdditionalService additionalService = this.additionalServiceDao.findByRentalId(rentalId);
+		return new SuccessDataResult<AdditionalService>(additionalService);
+	}
+
 
 }

@@ -34,12 +34,12 @@ public class CarsController {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateCarRequest createCarRequest){
+	public Result add(@RequestBody CreateCarRequest createCarRequest){
 		return this.carService.add(createCarRequest);
 	}
 	
 	@PutMapping("update")
-	public Result update(@RequestBody @Valid UpdateCarRequest updateCarRequest){
+	public Result update(@RequestBody UpdateCarRequest updateCarRequest){
 		return this.carService.update(updateCarRequest);
 	}
 

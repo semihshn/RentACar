@@ -32,7 +32,7 @@ public class CarMaintananceController {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateCarMaintanceRequest createCarMaintanceRequest){
+	public Result add(@RequestBody CreateCarMaintanceRequest createCarMaintanceRequest){
 		return this.carMaintanceService.add(createCarMaintanceRequest);
 	}
 

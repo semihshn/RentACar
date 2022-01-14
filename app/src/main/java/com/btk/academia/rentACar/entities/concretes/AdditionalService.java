@@ -27,6 +27,9 @@ public class AdditionalService {
 	
 	@Column(name="name")
 	private String name;
+
+	@Column(name="price")
+	private Double price;
 	
 	@ManyToOne
 	@JoinColumn(name="rental_id")

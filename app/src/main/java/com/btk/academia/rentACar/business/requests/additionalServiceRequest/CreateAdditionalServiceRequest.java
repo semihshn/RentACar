@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class CreateAdditionalServiceRequest {
 	
 	private String name;
+	private Double price;
 	private Integer rentalId;
 
 }

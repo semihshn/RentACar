@@ -34,12 +34,12 @@ public class ColorsController {
 	}
 	
 	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateColorRequest createColorRequest){
+	public Result add(@RequestBody CreateColorRequest createColorRequest){
 		return this.colorService.add(createColorRequest);
 	}
 	
 	@PutMapping("update")
-	public Result update(@RequestBody @Valid UpdateColorRequest updateColorRequest){
+	public Result update(@RequestBody UpdateColorRequest updateColorRequest){
 		return this.colorService.update(updateColorRequest);
 	}
 
