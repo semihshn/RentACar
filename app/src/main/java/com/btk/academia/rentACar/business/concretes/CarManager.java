@@ -3,6 +3,8 @@ package com.btk.academia.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.btk.academia.rentACar.business.dtos.CustomerDto;
+import com.btk.academia.rentACar.entities.concretes.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,15 @@ public class CarManager implements CarService {
 		
 		return new SuccessDataResult<List<CarDto>>(response);
 	}
+
+	@Override
+	public DataResult<CarDto> getById(Integer carId) {
+		Car car = this.carDao.findById(carId).get();
+		CarDto response = modelMapperService.forDto().map(car, CarDto.class);
+
+		return new SuccessDataResult<CarDto>(response);
+	}
+
 
 	@Override
 	public Result add(CreateCarRequest createCarRequest) {

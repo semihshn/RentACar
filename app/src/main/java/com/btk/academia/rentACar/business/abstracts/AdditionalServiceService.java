@@ -6,9 +6,11 @@ import com.btk.academia.rentACar.core.utilities.results.Result;
 import com.btk.academia.rentACar.entities.concretes.AdditionalService;
 import com.btk.academia.rentACar.entities.concretes.Rental;
 
+import java.util.List;
+
 public interface AdditionalServiceService {
 	
 	Result add(CreateAdditionalServiceRequest createAdditionalServiceRequest);
-	DataResult<AdditionalService> getByRentalId(Integer rentalId);
+	DataResult<List<AdditionalService>> getByRentalId(Integer rentalId);
 
 }

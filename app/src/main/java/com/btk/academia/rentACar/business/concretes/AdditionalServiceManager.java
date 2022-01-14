@@ -15,6 +15,8 @@ import com.btk.academia.rentACar.core.utilities.results.SuccessResult;
 import com.btk.academia.rentACar.dataAccess.abstracts.AdditionalServiceDao;
 import com.btk.academia.rentACar.entities.concretes.AdditionalService;
 
+import java.util.List;
+
 @Service
 public class AdditionalServiceManager implements AdditionalServiceService {
 
@@ -41,9 +43,9 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 	}
 
 	@Override
-	public DataResult<AdditionalService> getByRentalId(Integer rentalId) {
-		AdditionalService additionalService = this.additionalServiceDao.findByRentalId(rentalId);
-		return new SuccessDataResult<AdditionalService>(additionalService);
+	public DataResult<List<AdditionalService>> getByRentalId(Integer rentalId) {
+		List<AdditionalService> additionalService = this.additionalServiceDao.findByRentalId(rentalId);
+		return new SuccessDataResult<List<AdditionalService>>(additionalService);
 	}
 
 
