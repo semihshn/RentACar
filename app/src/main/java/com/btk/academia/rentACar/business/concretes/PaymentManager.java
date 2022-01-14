@@ -56,13 +56,13 @@ public class PaymentManager implements PaymentService {
 
         RentalListDto rental= rentalService.getById(rentalId).getData();
 
-        Period diff = Period.between(rental.getReturnDate(), rental.getRentDate());
+        Period diff = Period.between(rental.getRentDate(), rental.getReturnDate());
 
         Car car = rentalService.getByCarId(rental.getCarId()).getData().getCar();
         AdditionalService additionalService = additionalServiceManager.getByRentalId(rentalId).getData();
 
-        Double total = -(car.getDailyPrice()*diff.getDays())+(additionalService.getPrice());
-        System.out.println(total);
+        Double total = car.getDailyPrice()*diff.getDays()+additionalService.getPrice();
+        
         payment.setTotal(total);
 
         this.paymentDao.save(payment);
