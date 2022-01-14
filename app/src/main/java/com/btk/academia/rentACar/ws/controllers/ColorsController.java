@@ -2,8 +2,6 @@ package com.btk.academia.rentACar.ws.controllers;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.btk.academia.rentACar.business.abstracts.ColorService;
-import com.btk.academia.rentACar.business.dtos.ColorListDto;
+import com.btk.academia.rentACar.business.dtos.ColorDto;
 import com.btk.academia.rentACar.business.requests.colorRequests.CreateColorRequest;
 import com.btk.academia.rentACar.business.requests.colorRequests.UpdateColorRequest;
 import com.btk.academia.rentACar.core.utilities.results.DataResult;
@@ -29,7 +27,7 @@ public class ColorsController {
 	}
 	
 	@GetMapping("getall")
-	public DataResult<List<ColorListDto>> getAll(){
+	public DataResult<List<ColorDto>> getAll(){
 		return this.colorService.getAll();
 	}
 	

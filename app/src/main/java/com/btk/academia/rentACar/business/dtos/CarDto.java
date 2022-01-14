@@ -7,8 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerListDto {
-	
-	private Integer customerId;
+public class CarDto {
+
+	private Double dailyPrice;
+	private Integer modelYear;
+	private String description;
+	private Integer findexScore;
+	private Integer kilometer;
 
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ColorListDto {
+public class ColorDto {
 	
 	private Integer id;
 	private String name;

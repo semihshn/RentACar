@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.btk.academia.rentACar.business.abstracts.CustomerService;
-import com.btk.academia.rentACar.business.dtos.CustomerListDto;
+import com.btk.academia.rentACar.business.dtos.CustomerDto;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
 import com.btk.academia.rentACar.core.utilities.results.DataResult;
 import com.btk.academia.rentACar.core.utilities.results.SuccessDataResult;
@@ -25,11 +25,11 @@ public class CustomerManager implements CustomerService {
 	}
 
 	@Override
-	public DataResult<CustomerListDto> getById(Integer id) {
+	public DataResult<CustomerDto> getById(Integer id) {
 		Customer customer = this.customerDao.findById(id).get();
-		CustomerListDto response = modelMapperService.forDto().map(customer, CustomerListDto.class);
+		CustomerDto response = modelMapperService.forDto().map(customer, CustomerDto.class);
 
-		return new SuccessDataResult<CustomerListDto>(response);
+		return new SuccessDataResult<CustomerDto>(response);
 	}
 
 }

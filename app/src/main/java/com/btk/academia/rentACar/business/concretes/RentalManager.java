@@ -14,7 +14,7 @@ import com.btk.academia.rentACar.business.abstracts.CarMaintanceService;
 import com.btk.academia.rentACar.business.abstracts.CustomerService;
 import com.btk.academia.rentACar.business.abstracts.RentalService;
 import com.btk.academia.rentACar.business.constants.Messages;
-import com.btk.academia.rentACar.business.dtos.RentalListDto;
+import com.btk.academia.rentACar.business.dtos.RentalDto;
 import com.btk.academia.rentACar.business.requests.rentalRequests.CreateRentalRequest;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
@@ -60,11 +60,11 @@ public class RentalManager implements RentalService {
 	}
 	
 	@Override
-	public DataResult<RentalListDto> getById(Integer id) {
+	public DataResult<RentalDto> getById(Integer id) {
 		Rental rental = this.rentalDao.findById(id).get();
-		RentalListDto response = modelMapperService.forDto().map(rental, RentalListDto.class);
+		RentalDto response = modelMapperService.forDto().map(rental, RentalDto.class);
 
-		return new SuccessDataResult<RentalListDto>(response);
+		return new SuccessDataResult<RentalDto>(response);
 	}
 	
 	@Override
@@ -74,16 +74,16 @@ public class RentalManager implements RentalService {
 	}
 	
 	@Override
-	public DataResult<List<RentalListDto>> getAll(Integer pageNo, Integer pageSize) {
+	public DataResult<List<RentalDto>> getAll(Integer pageNo, Integer pageSize) {
 		Pageable pageable = PageRequest.of(pageNo-1, pageSize==null?10:pageSize);
 		
 		List<Rental> rentalList = this.rentalDao.findAll(pageable).getContent();
-		List<RentalListDto> response = rentalList.stream()
+		List<RentalDto> response = rentalList.stream()
 				.map(rental->modelMapperService.forDto()
-						.map(rental, RentalListDto.class))
+						.map(rental, RentalDto.class))
 				.collect(Collectors.toList());
 		
-		return new SuccessDataResult<List<RentalListDto>>(response);
+		return new SuccessDataResult<List<RentalDto>>(response);
 	}
 	
 	private Result checkCarExistRentalHistory(Integer rentDate, Integer returnDate) {

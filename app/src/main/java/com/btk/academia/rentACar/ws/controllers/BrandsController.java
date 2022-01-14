@@ -2,8 +2,6 @@ package com.btk.academia.rentACar.ws.controllers;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.btk.academia.rentACar.business.abstracts.BrandService;
-import com.btk.academia.rentACar.business.dtos.BrandListDto;
+import com.btk.academia.rentACar.business.dtos.BrandDto;
 import com.btk.academia.rentACar.business.requests.brandRequests.CreateBrandRequest;
 import com.btk.academia.rentACar.business.requests.brandRequests.UpdateBrandRequest;
 import com.btk.academia.rentACar.core.utilities.results.DataResult;
@@ -29,7 +27,7 @@ public class BrandsController {
 	}
 	
 	@GetMapping("getall")
-	public DataResult<List<BrandListDto>> getAll(){
+	public DataResult<List<BrandDto>> getAll(){
 		return this.brandService.getAll();
 	}
 	

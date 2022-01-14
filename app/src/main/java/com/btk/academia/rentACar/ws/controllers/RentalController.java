@@ -2,8 +2,6 @@ package com.btk.academia.rentACar.ws.controllers;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.btk.academia.rentACar.business.abstracts.RentalService;
-import com.btk.academia.rentACar.business.dtos.RentalListDto;
+import com.btk.academia.rentACar.business.dtos.RentalDto;
 import com.btk.academia.rentACar.business.requests.rentalRequests.CreateRentalRequest;
 import com.btk.academia.rentACar.core.utilities.results.DataResult;
 import com.btk.academia.rentACar.core.utilities.results.Result;
@@ -33,7 +31,7 @@ public class RentalController {
 	}
 	
 	@GetMapping("getall")
-	public DataResult<List<RentalListDto>> getAll(@RequestParam Integer pageNo,@RequestParam Integer pageSize){
+	public DataResult<List<RentalDto>> getAll(@RequestParam Integer pageNo, @RequestParam Integer pageSize){
 		return this.rentalService.getAll(pageNo,pageSize);
 	}
 	
