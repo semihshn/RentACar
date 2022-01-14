@@ -61,8 +61,8 @@ public class PaymentManager implements PaymentService {
         Car car = rentalService.getByCarId(rental.getCarId()).getData().getCar();
         AdditionalService additionalService = additionalServiceManager.getByRentalId(rentalId).getData();
 
-        Double total = -(car.getDailyPrice()*-diff.getDays())+(additionalService.getPrice());
-
+        Double total = -(car.getDailyPrice()*diff.getDays())+(additionalService.getPrice());
+        System.out.println(total);
         payment.setTotal(total);
 
         this.paymentDao.save(payment);
