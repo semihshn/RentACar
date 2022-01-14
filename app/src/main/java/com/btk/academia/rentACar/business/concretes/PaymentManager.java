@@ -1,14 +1,13 @@
 package com.btk.academia.rentACar.business.concretes;
 
-import com.btk.academia.rentACar.business.abstracts.AdditionalServiceService;
-import com.btk.academia.rentACar.business.abstracts.CarService;
-import com.btk.academia.rentACar.business.abstracts.PaymentService;
-import com.btk.academia.rentACar.business.abstracts.RentalService;
+import com.btk.academia.rentACar.business.abstracts.*;
 import com.btk.academia.rentACar.business.dtos.CarDto;
 import com.btk.academia.rentACar.business.dtos.RentalDto;
 import com.btk.academia.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
+import com.btk.academia.rentACar.core.adapters.CustomerCheckLimitService;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
+import com.btk.academia.rentACar.core.utilities.results.ErrorResult;
 import com.btk.academia.rentACar.core.utilities.results.Result;
 import com.btk.academia.rentACar.core.utilities.results.SuccessResult;
 import com.btk.academia.rentACar.dataAccess.abstracts.PaymentDao;
@@ -36,35 +35,38 @@ public class PaymentManager implements PaymentService {
     private RentalService rentalService;
     private CarService carService;
     private AdditionalServiceService additionalServiceService;
+    private CustomerCheckLimitService customerCheckLimitService;
 
     @Autowired
     public PaymentManager(PaymentDao paymentDao,ModelMapperService modelMapperService
     ,RentalService rentalService, AdditionalServiceService additionalServiceService
-    ,CarService carService) {
+    ,CarService carService, CustomerCheckLimitService customerCheckLimitService
+    ) {
         this.paymentDao=paymentDao;
         this.modelMapperService=modelMapperService;
         this.rentalService=rentalService;
         this.additionalServiceService=additionalServiceService;
         this.carService=carService;
+        this.customerCheckLimitService=customerCheckLimitService;
     }
 
     @Override
     public Result add(CreatePaymentRequest createPaymentRequest) {
         Result result = BusinessRules.run(
-
+                customerCheckLimitService.checkIfLimitIsEnought()
         );
 
         if(!result.isSuccess()) {
             return result;
         }
 
-        Payment payment = modelMapperService.forRequest().map(createPaymentRequest, Payment.class);
+            Payment payment = modelMapperService.forRequest().map(createPaymentRequest, Payment.class);
 
-        Integer rentalId =createPaymentRequest.getRentalId();
-        payment=paymentCalculate(payment,rentalId);
+            Integer rentalId = createPaymentRequest.getRentalId();
+            payment = paymentCalculate(payment, rentalId);
 
-        this.paymentDao.save(payment);
-        return new SuccessResult("ödeme alındı");
+            this.paymentDao.save(payment);
+            return new SuccessResult("ödeme alındı");
     }
 
     private Payment paymentCalculate(Payment payment,Integer rentalId){
