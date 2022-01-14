@@ -59,6 +59,7 @@ public class PaymentManager implements PaymentService {
         //date difference
         Period diff = Period.between(rental.getRentDate(), rental.getReturnDate());
 
+        //dependency
         Car car = rentalService.getByCarId(rental.getCarId()).getData().getCar();
         AdditionalService additionalService = additionalServiceManager.getByRentalId(rentalId).getData();
 
