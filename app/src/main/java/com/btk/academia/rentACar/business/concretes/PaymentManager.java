@@ -4,6 +4,7 @@ import com.btk.academia.rentACar.business.abstracts.*;
 import com.btk.academia.rentACar.business.dtos.CarDto;
 import com.btk.academia.rentACar.business.dtos.RentalDto;
 import com.btk.academia.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
+import com.btk.academia.rentACar.business.requests.userInfoRequests.CreateUserInfoRequest;
 import com.btk.academia.rentACar.core.adapters.CustomerCheckLimitService;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
@@ -36,11 +37,13 @@ public class PaymentManager implements PaymentService {
     private CarService carService;
     private AdditionalServiceService additionalServiceService;
     private CustomerCheckLimitService customerCheckLimitService;
+    private UserInfoService userInfoService;
 
     @Autowired
     public PaymentManager(PaymentDao paymentDao,ModelMapperService modelMapperService
     ,RentalService rentalService, AdditionalServiceService additionalServiceService
-    ,CarService carService, CustomerCheckLimitService customerCheckLimitService
+    ,CarService carService, CustomerCheckLimitService customerCheckLimitService,
+                          UserInfoService userInfoService
     ) {
         this.paymentDao=paymentDao;
         this.modelMapperService=modelMapperService;
@@ -48,10 +51,11 @@ public class PaymentManager implements PaymentService {
         this.additionalServiceService=additionalServiceService;
         this.carService=carService;
         this.customerCheckLimitService=customerCheckLimitService;
+        this.userInfoService=userInfoService;
     }
 
     @Override
-    public Result add(CreatePaymentRequest createPaymentRequest) {
+    public Result add(CreatePaymentRequest createPaymentRequest, Boolean isSaveUserInfo) {
         Result result = BusinessRules.run(
                 customerCheckLimitService.checkIfLimitIsEnought()
         );
@@ -64,6 +68,18 @@ public class PaymentManager implements PaymentService {
 
             Integer rentalId = createPaymentRequest.getRentalId();
             payment = paymentCalculate(payment, rentalId);
+
+            RentalDto rental= rentalService.getById(rentalId).getData();
+
+            if(isSaveUserInfo){
+                CreateUserInfoRequest request = CreateUserInfoRequest.builder()
+                        .name(createPaymentRequest.getName())
+                        .cardNumber(createPaymentRequest.getCardNumber())
+                        .customerId(rental.getCustomerId())
+                        .build();
+
+                this.userInfoService.add(request);
+            }
 
             this.paymentDao.save(payment);
             return new SuccessResult("ödeme alındı");
@@ -95,6 +111,5 @@ public class PaymentManager implements PaymentService {
         return payment;
 
     }
-
 
 }

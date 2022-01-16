@@ -31,7 +31,7 @@ public class RentalController {
 	}
 	
 	@GetMapping("getall")
-	public DataResult<List<RentalDto>> getAll(@RequestParam Integer pageNo, @RequestParam Integer pageSize){
+	public DataResult<List<RentalDto>> getAll(@RequestParam Integer pageNo, @RequestParam(required = false) Integer pageSize){
 		return this.rentalService.getAll(pageNo,pageSize);
 	}
 	

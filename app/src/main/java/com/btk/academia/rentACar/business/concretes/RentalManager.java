@@ -97,7 +97,7 @@ public class RentalManager implements RentalService {
 	
 	private Result checkCarKilometer(Integer rentedKilometer, Integer returnedKilometer) {
         
-		if (rentedKilometer<returnedKilometer) {
+		if (rentedKilometer>returnedKilometer) {
 			return new ErrorResult(Messages.illogicalRentKilometer);
 		}
 

@@ -6,10 +6,7 @@ import com.btk.academia.rentACar.business.requests.individualCustomerRequests.Cr
 import com.btk.academia.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
 import com.btk.academia.rentACar.core.utilities.results.Result;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -22,7 +19,7 @@ public class PaymentController {
     }
 
     @PostMapping("add")
-    public Result add(@RequestBody CreatePaymentRequest createPaymentRequest){
-        return this.paymentService.add(createPaymentRequest);
+    public Result add(@RequestBody CreatePaymentRequest createPaymentRequest, @RequestParam Boolean isSaveUserInfo){
+        return this.paymentService.add(createPaymentRequest,isSaveUserInfo);
     }
 }
