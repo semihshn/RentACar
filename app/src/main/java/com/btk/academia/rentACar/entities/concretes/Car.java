@@ -42,6 +42,9 @@ public class Car {
 	
 	@Column(name="kilometer")
 	private Integer kilometer;
+
+	@Column(name="min_age")
+	private Integer minAge;
 	
 	@ManyToOne
 	@JoinColumn(name="brand_id")

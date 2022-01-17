@@ -2,7 +2,11 @@ package com.btk.academia.rentACar.business.concretes;
 
 import java.util.Calendar;
 
+import com.btk.academia.rentACar.business.dtos.CustomerDto;
+import com.btk.academia.rentACar.business.dtos.IndividualCustomerDto;
 import com.btk.academia.rentACar.core.adapters.CustomerCheckFindeksScore;
+import com.btk.academia.rentACar.core.utilities.results.*;
+import com.btk.academia.rentACar.entities.concretes.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +15,6 @@ import com.btk.academia.rentACar.business.constants.Messages;
 import com.btk.academia.rentACar.business.requests.individualCustomerRequests.CreateIndividualCustomerRequest;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
-import com.btk.academia.rentACar.core.utilities.results.ErrorResult;
-import com.btk.academia.rentACar.core.utilities.results.Result;
-import com.btk.academia.rentACar.core.utilities.results.SuccessResult;
 import com.btk.academia.rentACar.dataAccess.abstracts.IndividualCustomerDao;
 import com.btk.academia.rentACar.entities.concretes.IndividualCustomer;
 
@@ -52,7 +53,15 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 		this.individualCustomerDao.save(individualCustomer);
 		return new SuccessResult(Messages.individualCustomerAdded);
 	}
-	
+
+	@Override
+	public DataResult<IndividualCustomerDto> getById(Integer customerId) {
+		IndividualCustomer individualCustomer = this.individualCustomerDao.findById(customerId).get();
+		IndividualCustomerDto response = modelMapperService.forDto().map(individualCustomer, IndividualCustomerDto.class);
+
+		return new SuccessDataResult<IndividualCustomerDto>(response);
+	}
+
 	private Result checkIfEmailExists(String email) {
 		if (this.individualCustomerDao.findByEmail(email)!=null) {
 			return new ErrorResult("Bu email ile kayıtlı birisi var");

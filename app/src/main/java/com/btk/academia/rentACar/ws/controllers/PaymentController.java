@@ -19,7 +19,7 @@ public class PaymentController {
     }
 
     @PostMapping("add")
-    public Result add(@RequestBody CreatePaymentRequest createPaymentRequest, @RequestParam Boolean isSaveUserInfo){
-        return this.paymentService.add(createPaymentRequest,isSaveUserInfo);
+    public Result add(@RequestBody CreatePaymentRequest createPaymentRequest, @RequestParam Boolean isSaveUserInfo, @RequestParam String promationCode){
+        return this.paymentService.add(createPaymentRequest,isSaveUserInfo,promationCode);
     }
 }

@@ -25,9 +25,14 @@ public class RentalController {
 		this.rentalService = rentalService;
 	}
 	
-	@PostMapping("add")
-	public Result add(@RequestBody CreateRentalRequest createRentalRequest){
-		return this.rentalService.add(createRentalRequest);
+	@PostMapping("add/individual")
+	public Result addForIndividual(@RequestBody CreateRentalRequest createRentalRequest){
+		return this.rentalService.addForIndividual(createRentalRequest);
+	}
+
+	@PostMapping("add/corporate")
+	public Result addForCorporate(@RequestBody CreateRentalRequest createRentalRequest){
+		return this.rentalService.addForCorporate(createRentalRequest);
 	}
 	
 	@GetMapping("getall")

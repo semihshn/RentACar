@@ -19,4 +19,6 @@ public class CreateCarRequest {
 	
 	private Integer kilometer;
 
+	private Integer minAge;
+
 }

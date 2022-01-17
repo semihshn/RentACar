@@ -21,4 +21,6 @@ public class UpdateCarRequest {
 	
 	private Integer kilometer;
 
+	private Integer minAge;
+
 }

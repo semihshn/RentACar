@@ -14,5 +14,6 @@ public class CarDto {
 	private String description;
 	private Integer findexScore;
 	private Integer kilometer;
+	private Integer minAge;
 
 }

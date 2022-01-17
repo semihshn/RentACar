@@ -1,20 +1,18 @@
 package com.btk.academia.rentACar.business.concretes;
 
 import com.btk.academia.rentACar.business.abstracts.*;
+import com.btk.academia.rentACar.business.dtos.AdditionalServiceDto;
 import com.btk.academia.rentACar.business.dtos.CarDto;
+import com.btk.academia.rentACar.business.dtos.PaymentDto;
 import com.btk.academia.rentACar.business.dtos.RentalDto;
 import com.btk.academia.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
 import com.btk.academia.rentACar.business.requests.userInfoRequests.CreateUserInfoRequest;
 import com.btk.academia.rentACar.core.adapters.CustomerCheckLimitService;
 import com.btk.academia.rentACar.core.utilities.business.BusinessRules;
 import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
-import com.btk.academia.rentACar.core.utilities.results.ErrorResult;
-import com.btk.academia.rentACar.core.utilities.results.Result;
-import com.btk.academia.rentACar.core.utilities.results.SuccessResult;
+import com.btk.academia.rentACar.core.utilities.results.*;
 import com.btk.academia.rentACar.dataAccess.abstracts.PaymentDao;
-import com.btk.academia.rentACar.entities.concretes.AdditionalService;
-import com.btk.academia.rentACar.entities.concretes.Car;
-import com.btk.academia.rentACar.entities.concretes.Payment;
+import com.btk.academia.rentACar.entities.concretes.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +24,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class PaymentManager implements PaymentService {
 
     private PaymentDao paymentDao;
@@ -38,12 +36,13 @@ public class PaymentManager implements PaymentService {
     private AdditionalServiceService additionalServiceService;
     private CustomerCheckLimitService customerCheckLimitService;
     private UserInfoService userInfoService;
+    private PromationCodeService promationCodeService;
 
     @Autowired
     public PaymentManager(PaymentDao paymentDao,ModelMapperService modelMapperService
     ,RentalService rentalService, AdditionalServiceService additionalServiceService
     ,CarService carService, CustomerCheckLimitService customerCheckLimitService,
-                          UserInfoService userInfoService
+                          UserInfoService userInfoService, PromationCodeService promationCodeService
     ) {
         this.paymentDao=paymentDao;
         this.modelMapperService=modelMapperService;
@@ -52,10 +51,11 @@ public class PaymentManager implements PaymentService {
         this.carService=carService;
         this.customerCheckLimitService=customerCheckLimitService;
         this.userInfoService=userInfoService;
+        this.promationCodeService=promationCodeService;
     }
 
     @Override
-    public Result add(CreatePaymentRequest createPaymentRequest, Boolean isSaveUserInfo) {
+    public Result add(CreatePaymentRequest createPaymentRequest, Boolean isSaveUserInfo, String code) {
         Result result = BusinessRules.run(
                 customerCheckLimitService.checkIfLimitIsEnought()
         );
@@ -81,9 +81,27 @@ public class PaymentManager implements PaymentService {
                 this.userInfoService.add(request);
             }
 
+            if(checkIfPromotionCode(code).isSuccess()){
+                PromationCode promationCode=promationCodeService.getByPromationCode(code).getData();
+                Double total=payment.getTotal()-(payment.getTotal()*promationCode.getDiscountRate());
+                payment.setTotal(total);
+            }
+
             payment.setId(0);
             this.paymentDao.save(payment);
             return new SuccessResult("ödeme alındı");
+    }
+
+    @Override
+    public DataResult<List<PaymentDto>> getByRentalId(Integer rentalId) {
+        List<Payment> paymentList = this.paymentDao.findByRentalId(rentalId);
+
+        List<PaymentDto> response = paymentList.stream()
+                .map(payment->modelMapperService.forDto()
+                        .map(payment, PaymentDto.class))
+                .collect(Collectors.toList());
+
+        return new SuccessDataResult<List<PaymentDto>>(response);
     }
 
     private Payment paymentCalculate(Payment payment,Integer rentalId){
@@ -95,13 +113,15 @@ public class PaymentManager implements PaymentService {
 
         //dependency
         CarDto carDto = carService.getById(rental.getCarId()).getData();
-        List<AdditionalService> additionalService = additionalServiceService.getByRentalId(rentalId).getData();
+        List<AdditionalServiceDto> additionalService = additionalServiceService.getByRentalId(rentalId).getData();
 
         Double serviceTotalPrice = additionalService.stream()
                 .map(a->a.getPrice())
                 .reduce((double) 0, (Double::sum));
 
         Double total = carDto.getDailyPrice()*diff+serviceTotalPrice;
+
+
 
         if(!rental.getReturnDate().equals(LocalDateTime.now())){
             payment.setTotal(total);
@@ -111,6 +131,15 @@ public class PaymentManager implements PaymentService {
 
         return payment;
 
+    }
+
+    private Result checkIfPromotionCode(String code) {
+        PromationCode promationCode=promationCodeService.getByPromationCode(code).getData();
+        if (!(promationCode==null?"":promationCode).equals(promationCode.getPromationCode())) {
+            return new ErrorResult();
+        }
+
+        return new SuccessResult();
     }
 
 }

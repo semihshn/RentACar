@@ -1,22 +1,22 @@
 package com.btk.academia.rentACar.business.concretes;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.btk.academia.rentACar.business.abstracts.CarService;
+import com.btk.academia.rentACar.business.abstracts.*;
 import com.btk.academia.rentACar.business.dtos.CarDto;
 import com.btk.academia.rentACar.business.dtos.CustomerDto;
+import com.btk.academia.rentACar.business.dtos.IndividualCustomerDto;
 import com.btk.academia.rentACar.entities.concretes.Car;
+import com.btk.academia.rentACar.entities.concretes.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.btk.academia.rentACar.business.abstracts.CarMaintanceService;
-import com.btk.academia.rentACar.business.abstracts.CustomerService;
-import com.btk.academia.rentACar.business.abstracts.RentalService;
 import com.btk.academia.rentACar.business.constants.Messages;
 import com.btk.academia.rentACar.business.dtos.RentalDto;
 import com.btk.academia.rentACar.business.requests.rentalRequests.CreateRentalRequest;
@@ -38,22 +38,25 @@ public class RentalManager implements RentalService {
 	private CustomerService customerService;
 	private CarMaintanceService carMaintanceService;
 	private CarService carService;
+	private IndividualCustomerService individualCustomerService;
 
 	@Autowired
 	public RentalManager(RentalDao rentalDao,
 						 ModelMapperService modelMapperService,
 						 CustomerService customerService,
 						 @Lazy CarMaintanceService carMaintanceService,
-						 CarService carService) {
+						 CarService carService,
+						 IndividualCustomerService individualCustomerService) {
 		this.rentalDao=rentalDao;
 		this.modelMapperService=modelMapperService;
 		this.customerService=customerService;
 		this.carMaintanceService=carMaintanceService;
 		this.carService=carService;
+		this.individualCustomerService=individualCustomerService;
 	}
 
 	@Override
-	public Result add(CreateRentalRequest createRentalRequest) {
+	public Result addForCorporate(CreateRentalRequest createRentalRequest) {
 		Result result = BusinessRules.run(
 				checkCarExistRentalHistory(createRentalRequest.getRentDate().getYear(),createRentalRequest.getReturnDate().getYear()),
 				checkCarKilometer(createRentalRequest.getRentedKilometer(),createRentalRequest.getReturnedKilometer()),
@@ -61,6 +64,26 @@ public class RentalManager implements RentalService {
 				checkIfCustomerFindeksScore(createRentalRequest.getCustomerId(),createRentalRequest.getCarId())
 				);
 		
+		if(!result.isSuccess()) {
+			return result;
+		}
+
+		Rental rental = modelMapperService.forRequest().map(createRentalRequest, Rental.class);
+		rental.setId(0);
+		this.rentalDao.save(rental);
+		return new SuccessResult(Messages.rentalAdded);
+	}
+
+	@Override
+	public Result addForIndividual(CreateRentalRequest createRentalRequest) {
+		Result result = BusinessRules.run(
+				checkCarExistRentalHistory(createRentalRequest.getRentDate().getYear(),createRentalRequest.getReturnDate().getYear()),
+				checkCarKilometer(createRentalRequest.getRentedKilometer(),createRentalRequest.getReturnedKilometer()),
+				checkIfCustomerExists(createRentalRequest.getCustomerId()),
+				checkCarMaintanance(createRentalRequest.getCarId()),
+				checkIndividualCustomerAge(createRentalRequest.getCarId(),createRentalRequest.getCustomerId())
+		);
+
 		if(!result.isSuccess()) {
 			return result;
 		}
@@ -84,7 +107,19 @@ public class RentalManager implements RentalService {
 		Rental rental = this.rentalDao.findByCarId(carId);
 		return new SuccessDataResult<Rental>(rental);
 	}
-	
+
+	@Override
+	public DataResult<List<RentalDto>> getByCustomerId(Integer customerId) {
+		List<Rental> rentalList = this.rentalDao.findByCustomerId(customerId);
+
+		List<RentalDto> response = rentalList.stream()
+				.map(rental->modelMapperService.forDto()
+						.map(rental, RentalDto.class))
+				.collect(Collectors.toList());
+
+		return new SuccessDataResult<List<RentalDto>>(response);
+	}
+
 	@Override
 	public DataResult<List<RentalDto>> getAll(Integer pageNo, Integer pageSize) {
 		Pageable pageable = PageRequest.of(pageNo-1, pageSize==null?10:pageSize);
@@ -115,6 +150,19 @@ public class RentalManager implements RentalService {
 
 		return new SuccessResult();
 	}
+
+	private Result checkIndividualCustomerAge(Integer carId, Integer customerId) {
+		DataResult<CarDto> car=carService.getById(carId);
+		DataResult<IndividualCustomerDto> customer=individualCustomerService.getById(customerId);
+
+		Integer customerAge= LocalDateTime.now().getYear()-customer.getData().getBirthDate().getYear();
+
+		if(car.getData().getMinAge()>customerAge){
+			return new ErrorResult("Arabayı kiralayabilmek için yaşınız uygun değil");
+		}
+
+		return new SuccessResult();
+	}
 	
 	private Result checkIfCustomerExists(Integer customerId) {
         
@@ -125,7 +173,7 @@ public class RentalManager implements RentalService {
 		return new SuccessResult();
 	}
 
-	private Result checkIfCustomerFindeksScore(Integer customerId, Integer carId) {
+	private Result checkIfCustomerFindeksScore(Integer carId,Integer customerId) {
 
 		DataResult<CarDto> car=carService.getById(carId);
 		DataResult<CustomerDto> customer=customerService.getById(customerId);
