@@ -45,6 +45,7 @@ public class CarMaintananceManager implements CarMaintanceService{
 		}
 
 		CarMaintanance carMaintance = modelMapperService.forRequest().map(createCarMaintanceRequest, CarMaintanance.class);
+		carMaintance.setId(0);
 		this.carMaintanceDao.save(carMaintance);
 		return new SuccessResult("araç bakıma gönderildi");
 	}

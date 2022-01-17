@@ -35,6 +35,7 @@ public class CityManager implements CityService {
 		}
 
 		City city = modelMapperService.forRequest().map(createCityRequest, City.class);
+		city.setId(0);
 		this.cityDao.save(city);
 		return new SuccessResult("Şehir eklendi");
 	}

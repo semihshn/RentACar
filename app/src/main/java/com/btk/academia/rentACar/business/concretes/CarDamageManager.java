@@ -33,6 +33,7 @@ public class CarDamageManager implements CarDamageService {
 		}
 
 		CarDamage carDamage = modelMapperService.forRequest().map(createCarDamageRequest, CarDamage.class);
+		carDamage.setId(0);
 		this.carDamageDao.save(carDamage);
 		return new SuccessResult("Araç hasar kaydı oluşturuldu");
 	}

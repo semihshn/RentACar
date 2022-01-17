@@ -81,6 +81,7 @@ public class PaymentManager implements PaymentService {
                 this.userInfoService.add(request);
             }
 
+            payment.setId(0);
             this.paymentDao.save(payment);
             return new SuccessResult("ödeme alındı");
     }

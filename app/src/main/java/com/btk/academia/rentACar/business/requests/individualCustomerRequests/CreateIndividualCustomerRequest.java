@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateIndividualCustomerRequest {
+
+	private Integer tc;
 	
 	private LocalDate birthDate;
 	

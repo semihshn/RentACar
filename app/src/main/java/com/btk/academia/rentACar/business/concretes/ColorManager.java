@@ -52,6 +52,7 @@ public class ColorManager implements ColorService{
 		}
 
 		Color color = modelMapperService.forRequest().map(createColorRequest, Color.class);
+		color.setId(0);
 		this.colorDao.save(color);
 		return new SuccessResult(Messages.colorAdded);
 	}

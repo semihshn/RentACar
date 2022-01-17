@@ -2,6 +2,7 @@ package com.btk.academia.rentACar.business.concretes;
 
 import java.util.Calendar;
 
+import com.btk.academia.rentACar.core.adapters.CustomerCheckFindeksScore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,15 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 	
 	private IndividualCustomerDao individualCustomerDao;
 	private ModelMapperService modelMapperService;
+	private CustomerCheckFindeksScore customerCheckFindeksScore;
 	
 	@Autowired
-	public IndividualCustomerManager(IndividualCustomerDao individualCustomerDao,ModelMapperService modelMapperService) {
+	public IndividualCustomerManager(IndividualCustomerDao individualCustomerDao,
+									 ModelMapperService modelMapperService,
+									 CustomerCheckFindeksScore customerCheckFindeksScore) {
 		this.individualCustomerDao=individualCustomerDao;
 		this.modelMapperService=modelMapperService;
+		this.customerCheckFindeksScore=customerCheckFindeksScore;
 	}
 
 	@Override
@@ -41,6 +46,9 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 		}
 
 		IndividualCustomer individualCustomer = modelMapperService.forRequest().map(createIndividualCustomerRequest, IndividualCustomer.class);
+
+		individualCustomer.setId(0);
+		individualCustomer.setFindeksScore(customerCheckFindeksScore.getIndividualCustomerFindeksScore(createIndividualCustomerRequest.getTc()));
 		this.individualCustomerDao.save(individualCustomer);
 		return new SuccessResult(Messages.individualCustomerAdded);
 	}

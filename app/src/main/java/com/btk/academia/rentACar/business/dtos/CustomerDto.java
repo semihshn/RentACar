@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerDto {
-	
+
+	private Integer findeksScore;
 	private Integer customerId;
 
 }

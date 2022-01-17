@@ -64,6 +64,7 @@ public class CarManager implements CarService {
 		}
 
 		Car car = modelMapperService.forRequest().map(createCarRequest, Car.class);
+		car.setId(0);
 		this.carDao.save(car);
 		return new SuccessResult(Messages.carAdded);
 	}

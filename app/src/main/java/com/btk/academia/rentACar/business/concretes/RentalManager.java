@@ -4,6 +4,10 @@ package com.btk.academia.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.btk.academia.rentACar.business.abstracts.CarService;
+import com.btk.academia.rentACar.business.dtos.CarDto;
+import com.btk.academia.rentACar.business.dtos.CustomerDto;
+import com.btk.academia.rentACar.entities.concretes.Car;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
@@ -33,13 +37,19 @@ public class RentalManager implements RentalService {
 	private ModelMapperService modelMapperService;
 	private CustomerService customerService;
 	private CarMaintanceService carMaintanceService;
-	
+	private CarService carService;
+
 	@Autowired
-	public RentalManager(RentalDao rentalDao,ModelMapperService modelMapperService,CustomerService customerService,	@Lazy CarMaintanceService carMaintanceService) {
+	public RentalManager(RentalDao rentalDao,
+						 ModelMapperService modelMapperService,
+						 CustomerService customerService,
+						 @Lazy CarMaintanceService carMaintanceService,
+						 CarService carService) {
 		this.rentalDao=rentalDao;
 		this.modelMapperService=modelMapperService;
 		this.customerService=customerService;
 		this.carMaintanceService=carMaintanceService;
+		this.carService=carService;
 	}
 
 	@Override
@@ -47,7 +57,8 @@ public class RentalManager implements RentalService {
 		Result result = BusinessRules.run(
 				checkCarExistRentalHistory(createRentalRequest.getRentDate().getYear(),createRentalRequest.getReturnDate().getYear()),
 				checkCarKilometer(createRentalRequest.getRentedKilometer(),createRentalRequest.getReturnedKilometer()),
-				checkIfCustomerExists(createRentalRequest.getCustomerId())
+				checkIfCustomerExists(createRentalRequest.getCustomerId()),
+				checkIfCustomerFindeksScore(createRentalRequest.getCustomerId(),createRentalRequest.getCarId())
 				);
 		
 		if(!result.isSuccess()) {
@@ -55,6 +66,7 @@ public class RentalManager implements RentalService {
 		}
 
 		Rental rental = modelMapperService.forRequest().map(createRentalRequest, Rental.class);
+		rental.setId(0);
 		this.rentalDao.save(rental);
 		return new SuccessResult(Messages.rentalAdded);
 	}
@@ -108,6 +120,19 @@ public class RentalManager implements RentalService {
         
 		if (customerService.getById(customerId)==null) {
 			return new ErrorResult(Messages.notAvailableCustomer);
+		}
+
+		return new SuccessResult();
+	}
+
+	private Result checkIfCustomerFindeksScore(Integer customerId, Integer carId) {
+
+		DataResult<CarDto> car=carService.getById(carId);
+		DataResult<CustomerDto> customer=customerService.getById(customerId);
+
+		if(car.getData().getFindexScore()>customer.getData().getFindeksScore()){
+			System.out.println(car.getData().getFindexScore()+" - "+customer.getData().getFindeksScore());
+			return new ErrorResult("Arabayı kiralayabilmek için findeks score unuz yeterli değil");
 		}
 
 		return new SuccessResult();

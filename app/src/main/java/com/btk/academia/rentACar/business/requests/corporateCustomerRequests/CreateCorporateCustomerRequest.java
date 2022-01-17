@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateCorporateCustomerRequest {
-	
+
+	private Integer vergiNo;
+
 	private String companyName;
 
 }

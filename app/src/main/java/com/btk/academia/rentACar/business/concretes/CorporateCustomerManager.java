@@ -1,5 +1,6 @@
 package com.btk.academia.rentACar.business.concretes;
 
+import com.btk.academia.rentACar.core.adapters.CustomerCheckFindeksScore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +20,15 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 	
 	private CorporateCustomerDao corporateCustomerDao;
 	private ModelMapperService modelMapperService;
+	private CustomerCheckFindeksScore customerCheckFindeksScore;
 	
 	@Autowired
-	public CorporateCustomerManager(CorporateCustomerDao corporateCustomerDao,ModelMapperService modelMapperService) {
+	public CorporateCustomerManager(CorporateCustomerDao corporateCustomerDao,
+									ModelMapperService modelMapperService,
+									CustomerCheckFindeksScore customerCheckFindeksScore) {
 		this.corporateCustomerDao=corporateCustomerDao;
 		this.modelMapperService=modelMapperService;
+		this.customerCheckFindeksScore=customerCheckFindeksScore;
 	}
 
 	@Override
@@ -37,6 +42,8 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 		}
 
 		CorporateCustomer corporateCustomer = modelMapperService.forRequest().map(createCorporateCustomerRequest, CorporateCustomer.class);
+		corporateCustomer.setId(0);
+		corporateCustomer.setFindeksScore(customerCheckFindeksScore.getCorporateCustomerFindeksScore(createCorporateCustomerRequest.getVergiNo()));
 		this.corporateCustomerDao.save(corporateCustomer);
 		return new SuccessResult(Messages.corporateCustomerAdded);
 	}
