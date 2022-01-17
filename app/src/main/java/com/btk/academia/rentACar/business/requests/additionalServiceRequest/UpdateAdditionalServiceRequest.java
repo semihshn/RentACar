@@ -1,16 +1,15 @@
-package com.btk.academia.rentACar.business.requests.paymentRequests;
+package com.btk.academia.rentACar.business.requests.additionalServiceRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreatePaymentRequest {
+public class UpdateAdditionalServiceRequest {
+    private Integer id;
     private String name;
-    private String cardNumber;
+    private Double price;
     private Integer rentalId;
 }

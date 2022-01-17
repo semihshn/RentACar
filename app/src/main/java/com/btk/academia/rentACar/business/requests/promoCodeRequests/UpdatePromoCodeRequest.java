@@ -1,4 +1,4 @@
-package com.btk.academia.rentACar.business.requests.promotionCodeRequests;
+package com.btk.academia.rentACar.business.requests.promoCodeRequests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreatePromationCodeRequest {
-
+public class UpdatePromoCodeRequest {
+    private Integer id;
     private String promationCode;
     private Double discountRate;
     private LocalDateTime startDate;

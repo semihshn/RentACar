@@ -7,5 +7,6 @@ import com.btk.academia.rentACar.entities.concretes.IndividualCustomer;
 public interface IndividualCustomerDao extends JpaRepository<IndividualCustomer, Integer>{
 	
 	IndividualCustomer findByEmail(String email);
+	IndividualCustomer findByRentalId(String email);
 
 }

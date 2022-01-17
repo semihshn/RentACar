@@ -13,17 +13,12 @@ import com.btk.academia.rentACar.core.utilities.mapping.ModelMapperService;
 import com.btk.academia.rentACar.core.utilities.results.*;
 import com.btk.academia.rentACar.dataAccess.abstracts.PaymentDao;
 import com.btk.academia.rentACar.entities.concretes.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,13 +31,13 @@ public class PaymentManager implements PaymentService {
     private AdditionalServiceService additionalServiceService;
     private CustomerCheckLimitService customerCheckLimitService;
     private UserInfoService userInfoService;
-    private PromationCodeService promationCodeService;
+    private PromoCodeService promationCodeService;
 
     @Autowired
     public PaymentManager(PaymentDao paymentDao,ModelMapperService modelMapperService
     ,RentalService rentalService, AdditionalServiceService additionalServiceService
     ,CarService carService, CustomerCheckLimitService customerCheckLimitService,
-                          UserInfoService userInfoService, PromationCodeService promationCodeService
+                          UserInfoService userInfoService, PromoCodeService promationCodeService
     ) {
         this.paymentDao=paymentDao;
         this.modelMapperService=modelMapperService;
@@ -64,25 +59,33 @@ public class PaymentManager implements PaymentService {
             return result;
         }
 
+            // Payment mapping from CreatePaymentRequest
             Payment payment = modelMapperService.forRequest().map(createPaymentRequest, Payment.class);
 
+            // get rentalId From createPaymentRequest
             Integer rentalId = createPaymentRequest.getRentalId();
-            payment = paymentCalculate(payment, rentalId);
 
+            // get RentalDto
             RentalDto rental= rentalService.getById(rentalId).getData();
 
+            //dependency
+            CarDto carDto = carService.getById(rental.getCarId()).getData();
+            List<AdditionalServiceDto> additionalService = additionalServiceService.getByRentalId(rentalId).getData();
+
+            payment = paymentCalculate(payment, rental,carDto,additionalService);
+
             if(isSaveUserInfo){
-                CreateUserInfoRequest request = CreateUserInfoRequest.builder()
+                CreateUserInfoRequest createUserInfoRequest = CreateUserInfoRequest.builder()
                         .name(createPaymentRequest.getName())
                         .cardNumber(createPaymentRequest.getCardNumber())
                         .customerId(rental.getCustomerId())
                         .build();
 
-                this.userInfoService.add(request);
+                this.userInfoService.add(createUserInfoRequest);
             }
 
             if(checkIfPromotionCode(code).isSuccess()){
-                PromationCode promationCode=promationCodeService.getByPromationCode(code).getData();
+                PromoCode promationCode=promationCodeService.getByPromationCode(code).getData();
                 Double total=payment.getTotal()-(payment.getTotal()*promationCode.getDiscountRate());
                 payment.setTotal(total);
             }
@@ -104,37 +107,35 @@ public class PaymentManager implements PaymentService {
         return new SuccessDataResult<List<PaymentDto>>(response);
     }
 
-    private Payment paymentCalculate(Payment payment,Integer rentalId){
+    private Payment paymentCalculate(Payment payment,RentalDto rental,CarDto carDto, List<AdditionalServiceDto> additionalServiceList){
 
-        RentalDto rental= rentalService.getById(rentalId).getData();
+
 
         //date difference
         long diff= ChronoUnit.DAYS.between(rental.getRentDate(), rental.getReturnDate());
 
-        //dependency
-        CarDto carDto = carService.getById(rental.getCarId()).getData();
-        List<AdditionalServiceDto> additionalService = additionalServiceService.getByRentalId(rentalId).getData();
 
-        Double serviceTotalPrice = additionalService.stream()
+        // additionalService Total Price
+        Double serviceTotalPrice = additionalServiceList.stream()
                 .map(a->a.getPrice())
                 .reduce((double) 0, (Double::sum));
 
         Double total = carDto.getDailyPrice()*diff+serviceTotalPrice;
 
-
-
+        //check if the rental return date is today
         if(!rental.getReturnDate().equals(LocalDateTime.now())){
             payment.setTotal(total);
+        }else{
+            payment.setTotal(0.0);
         }
 
         payment.setPaymentDate(LocalDateTime.now());
 
         return payment;
-
     }
 
     private Result checkIfPromotionCode(String code) {
-        PromationCode promationCode=promationCodeService.getByPromationCode(code).getData();
+        PromoCode promationCode=promationCodeService.getByPromationCode(code).getData();
         if (!(promationCode==null?"":promationCode).equals(promationCode.getPromationCode())) {
             return new ErrorResult();
         }

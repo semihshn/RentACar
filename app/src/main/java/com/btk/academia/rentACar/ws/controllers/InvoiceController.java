@@ -15,8 +15,13 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    @GetMapping("get")
-    public Result get(@RequestParam Integer rentalId){
-        return this.invoiceService.get(rentalId);
+    @GetMapping("get/individual")
+    public Result getIndividual(@RequestParam Integer rentalId){
+        return this.invoiceService.getInvoiceOfIndividualCustomer(rentalId);
+    }
+
+    @GetMapping("get/corporate")
+    public Result getCorporate(@RequestParam Integer rentalId){
+        return this.invoiceService.getInvoiceOfCorporateCustomer(rentalId);
     }
 }

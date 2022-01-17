@@ -13,7 +13,7 @@ public interface RentalService {
 	
 	Result addForCorporate(CreateRentalRequest createRentalRequest);
 	Result addForIndividual(CreateRentalRequest createRentalRequest);
-	DataResult<RentalDto> getById(Integer id);
+	DataResult<RentalDto> getById(Integer rentalId);
 	DataResult<Rental> getByCarId(Integer carId);
 	DataResult<List<RentalDto>> getByCustomerId(Integer customerId);
 	DataResult<List<RentalDto>> getAll(Integer pageNo, Integer pageSize);

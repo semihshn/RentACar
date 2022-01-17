@@ -186,8 +186,7 @@ public class RentalManager implements RentalService {
 		return new SuccessResult();
 	}
 	
-	//Araba bakımdaysa kiraya gönderilemez
-	//carmaintance tablosunda, carId kontrol et ve bakımda olup olmadığını öğren
+	//If the car is in maintenance, it cannot be sent to rent.
 	private Result checkCarMaintanance(Integer carId) {
         
 		if (carMaintanceService.getByCarId(carId)!=null) {
